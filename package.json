@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/depoio/node-telegram-bot#readme",
   "dependencies": {
+    "q": "^1.4.1",
     "request": "^2.58.0"
   }
 }
