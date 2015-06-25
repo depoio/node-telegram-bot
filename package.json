@@ -1,6 +1,6 @@
 {
   "name": "node-telegram-bot",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Telegram Bot API Wrapper for nodejs",
   "main": "index.js",
   "scripts": {
