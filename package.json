@@ -3,6 +3,12 @@
   "version": "0.0.7",
   "description": "Telegram Bot API Wrapper for nodejs",
   "main": "index.js",
+  "keywords": [
+    "telegram",
+    "telegram bot",
+    "telegram bot api",
+    "bot"
+  ],
   "scripts": {
     "test": "gulp test"
   },
