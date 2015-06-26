@@ -6,4 +6,4 @@ gulp.task('test', function () {
         .pipe(mocha({reporter: 'spec'}));
 });
 
-gulp.task('default', ['test']);
+gulp.task('default');
