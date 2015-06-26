@@ -4,7 +4,7 @@
   "description": "Telegram Bot API Wrapper for nodejs",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
