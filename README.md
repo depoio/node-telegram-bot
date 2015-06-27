@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.0.8 sendPhoto
 - 0.0.7 forwardMessage
 - 0.0.6 sendChatAction
 - 0.0.3 Longpoll
