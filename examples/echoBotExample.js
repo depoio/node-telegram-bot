@@ -5,7 +5,6 @@
 var Bot = require('./lib/Bot'), fs = require('fs');
 /**
  * this sample helps understand how the bot works, can also be used for integration tests ;)
- * @type {*|number}
  */
 var bot = new Bot({
     token: 'TOKEN HERE'
