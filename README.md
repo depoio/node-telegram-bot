@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.0.13 getUserProfilePhotos
 - 0.0.12 sendDocument
 - 0.0.9 sendAudio
 - 0.0.8 sendPhoto
