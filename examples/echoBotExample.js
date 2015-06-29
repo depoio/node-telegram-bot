@@ -2,7 +2,8 @@
  * Created by longstone on 28/06/15.
  */
 'use strict';
-var Bot = require('./lib/Bot'), fs = require('fs');
+var Bot = require('./lib/Bot');
+
 /**
  * this sample helps understand how the bot works, can also be used for integration tests ;)
  */
@@ -16,10 +17,7 @@ var bot = new Bot({
                     chat_id: message.chat.id,
                     caption: 'trololo',
                     files: {
-                        photo: {
-                            filename: 'logo.png',
-                            stream: fs.createReadStream('logo.png')
-                        }
+                        photo: './logo.png'
                     }
                 });
                 break;
