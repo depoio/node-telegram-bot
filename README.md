@@ -15,6 +15,48 @@ node-telegram-bot
 - 0.0.2 getMessage
 - 0.0.1 getMe
 
+## Sending files (including photo, audio, document, video and sticker) 
+
+Now only require filepath,
+
+```javascript
+
+bot.sendPhoto({
+  chat_id: USER_ID,
+  caption: 'Telegram Logo',
+  files: {
+    photo: './examples/logo.png'
+  }
+}, function (err, msg) {
+  console.log(err);
+  console.log(msg);
+});
+
+```
+
+
+Previously, 
+
+```javascript
+
+bot.sendPhoto({
+  chat_id: USER_ID,
+  caption: 'Telegram Logo',
+  files: {
+    photo: {
+      filename: './examples/logo.png',
+      stream: fs.createReadStream('./examples/logo.png')
+    }
+  }
+}, function (err, msg) {
+  console.log(err);
+  console.log(msg);
+});
+
+```
+
+
+
 ## Here's an example:
 
 ```javascript
