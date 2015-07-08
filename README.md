@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.0.15 emit command (message that starts with '/')
 - 0.0.14 sendLocation
 - 0.0.13 getUserProfilePhotos
 - 0.0.12 sendDocument
