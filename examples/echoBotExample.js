@@ -2,7 +2,7 @@
  * Created by longstone on 28/06/15.
  */
 'use strict';
-var Bot = require('./lib/Bot');
+var Bot = require('../lib/Bot');
 
 /**
  * this sample helps understand how the bot works, can also be used for integration tests ;)
@@ -39,4 +39,18 @@ var bot = new Bot({
         }
 
     })
+	//Command without argument
+	.on('test', function(command, msg){
+		bot.sendMessage({
+			chat_id: msg.chat.id,
+			text: 'You\'ve send command: ' + command
+		});
+	})
+	//Command with argument:
+	.on('arg', function(argument, msg){
+		bot.sendMessage({
+			chat_id: msg.chat.id,
+			text: 'You\'ve send command with argument: ' + argument
+		});
+	})
     .start();
