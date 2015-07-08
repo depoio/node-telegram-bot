@@ -17,6 +17,11 @@ node-telegram-bot
 - 0.0.2 getMessage
 - 0.0.1 getMe
 
+## Documentation
+
+Documentation is built using jsdoc with DocStrap. More to come (including examples)!
+[Documentation Link](http://depoio.github.io/node-telegram-bot/Bot.html)
+
 ## Sending files (including photo, audio, document, video and sticker) 
 
 Now only require filepath,
