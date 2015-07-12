@@ -8,7 +8,7 @@ var Bot = require('../lib/Bot');
  * this sample helps understand how the bot works, can also be used for integration tests ;)
  */
 var bot = new Bot({
-    token: 'TOKEN HERE'
+    token: '84447522:AAFO4YSn6ZLPCCDCmbZij7_upIh2zbm2Fe8'
 })
     .on('message', function (message) {
         switch (message.text) {
@@ -47,10 +47,10 @@ var bot = new Bot({
 		});
 	})
 	//Command with argument:
-	.on('arg', function(argument, msg){
+	.on('arg', function(args, msg){
 		bot.sendMessage({
 			chat_id: msg.chat.id,
-			text: 'You\'ve send command with argument: ' + argument
+			text: 'You\'ve send command with arguments: ' + args
 		});
 	})
     .start();
