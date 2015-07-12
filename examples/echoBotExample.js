@@ -8,7 +8,7 @@ var Bot = require('../lib/Bot');
  * this sample helps understand how the bot works, can also be used for integration tests ;)
  */
 var bot = new Bot({
-    token: '84447522:AAFO4YSn6ZLPCCDCmbZij7_upIh2zbm2Fe8'
+    token: 'TOKEN HERE'
 })
     .on('message', function (message) {
         switch (message.text) {
