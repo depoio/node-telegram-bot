@@ -40,7 +40,7 @@ var bot = new Bot({
 
     })
 	//Command without argument
-	.on('test', function(command, msg){
+	.on('test', function(msg){
 		bot.sendMessage({
 			chat_id: msg.chat.id,
 			text: 'You\'ve send command: ' + command
