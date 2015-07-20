@@ -8,49 +8,47 @@ var Bot = require('../lib/Bot');
  * this sample helps understand how the bot works, can also be used for integration tests ;)
  */
 var bot = new Bot({
-    token: 'TOKEN HERE'
+  token: 'TOKEN HERE'
 })
-    .on('message', function (message) {
-        switch (message.text) {
-            case "/sendPhoto":
-                bot.sendPhoto({
-                    chat_id: message.chat.id,
-                    caption: 'trololo',
-                    files: {
-                        photo: './logo.png'
-                    }
-                });
-                break;
-            case "/sendMessage":
-                bot.sendMessage({
-                    chat_id: message.chat.id,
-                    text: 'echo : ' + message.text
-                });
-                break;
-            case "/sendLocation":
-                bot.sendLocation({
-                    chat_id: message.chat.id,
-                    latitude: -27.121192,
-                    longitude: -109.366424,
-                    reply_to_message_id: message.message_id
-                })
-                ;
-                break;
+.on('message', function (message) {
+  switch (message.text) {
+    case "/sendPhoto":
+      bot.sendPhoto({
+        chat_id: message.chat.id,
+        caption: 'trololo',
+        files: {
+          photo: './logo.png'
         }
-
-    })
-	//Command without argument
-	.on('test', function(msg){
-		bot.sendMessage({
-			chat_id: msg.chat.id,
-			text: 'You\'ve send command: ' + command
-		});
-	})
-	//Command with argument:
-	.on('arg', function(args, msg){
-		bot.sendMessage({
-			chat_id: msg.chat.id,
-			text: 'You\'ve send command with arguments: ' + args
-		});
-	})
-    .start();
+      });
+      break;
+    case "/sendMessage":
+      bot.sendMessage({
+        chat_id: message.chat.id,
+        text: 'echo : ' + message.text
+      });
+      break;
+    case "/sendLocation":
+      bot.sendLocation({
+        chat_id: message.chat.id,
+        latitude: -27.121192,
+        longitude: -109.366424,
+        reply_to_message_id: message.message_id
+      });
+      break;
+  }
+})
+//Command without argument
+.on('test', function(msg){
+  bot.sendMessage({
+    chat_id: msg.chat.id,
+    text: 'You\'ve send command: ' + command
+  });
+})
+//Command with argument:
+.on('arg', function(args, msg){
+  bot.sendMessage({
+    chat_id: msg.chat.id,
+    text: 'You\'ve send command with arguments: ' + args
+  });
+})
+.start();
