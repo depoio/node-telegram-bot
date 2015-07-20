@@ -70,7 +70,7 @@
  * @constructor
  * @param {Object} options        Configurations for the client
  * @param {String} options.token  Bot token
- * 
+ *
  * @see https://core.telegram.org/bots/api
  */
 function Bot(options) {
@@ -87,12 +87,11 @@ util.inherits(Bot, EventEmitter);
 
 /**
  * This callback occur after client request for a certain webservice.
- * 
+ *
  * @callback Bot~requestCallback
  * @param {Error}   Error during request
  * @param {Object}  Response from Telegram service
  */
-
 Bot.prototype._get = function (options, callback) {
   var url = this.base_url + this.token + '/' + options.method;
 
@@ -142,7 +141,7 @@ Bot.prototype._multipart = function (options, callback) {
       form.append(key, options.params[key]);
     }
   });
-  
+
   return this;
 };
 
@@ -159,10 +158,19 @@ Bot.prototype._poll = function () {
         body.result.forEach(function (msg) {
           if (msg.update_id >= self.offset) {
             self.offset = msg.update_id + 1;
-            var command = msg.message.text.split(' ')[0];
-            if (command.charAt(0) === '/') {
-              self.emit(command, msg.message);
-            }
+	        if(msg.message.text &amp;&amp; msg.message.text.charAt(0) === '/'){
+		        var command = msg.message.text.split(' ', 2)[0];
+		        command = command.replace(/[^a-zA-Z0-9 ]/g, "");
+		        if(msg.message.text.split(' ')[1])
+		        {
+			        var arguments = msg.message.text.split(' ');
+			        arguments.shift();
+			        self.emit(command, msg.message, arguments);
+		        }
+		        else{
+			        self.emit(command, msg.message);
+		        }
+	        }
             self.emit('message', msg.message);
           }
         });
@@ -172,7 +180,6 @@ Bot.prototype._poll = function () {
     if (self.polling) {
       self._poll();
     }
-    
   });
 
   return this;
@@ -180,7 +187,7 @@ Bot.prototype._poll = function () {
 
 /**
  * Start polling for messages
- * 
+ *
  * @return {Bot} Self
  */
 Bot.prototype.start = function () {
@@ -194,12 +201,12 @@ Bot.prototype.start = function () {
 
 /**
  * End polling for messages
- * 
+ *
  * @return {Bot} Self
  */
 Bot.prototype.stop = function () {
   var self = this;
-  
+
   self.polling = false;
 
   return self;
@@ -207,7 +214,7 @@ Bot.prototype.stop = function () {
 
 /**
  * Returns basic information about the bot in form of a User object.
- * 
+ *
  * @param {Bot~requestCallback} callback    The callback that handles the response.
  * @return {Promise}  Q Promise
  *
@@ -237,8 +244,8 @@ Bot.prototype.getMe = function (callback) {
 };
 
 /**
- * Use this method to get a list of profile pictures for a user. 
- * 
+ * Use this method to get a list of profile pictures for a user.
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.user_id   Unique identifier of the target user
  * @param {String=}             options.offset    Sequential number of the first photo to be returned. By default, all photos are returned.
@@ -252,7 +259,7 @@ Bot.prototype.getUserProfilePhotos = function (options, callback) {
   var self = this
     , deferred = Q.defer();
 
-  this._get({ 
+  this._get({
     method: 'getUserProfilePhotos',
     params: {
       user_id: options.user_id,
@@ -276,7 +283,7 @@ Bot.prototype.getUserProfilePhotos = function (options, callback) {
 
 /**
  * Use this method to send text messages.
- * 
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {String}              options.text      Text of the message to be sent
@@ -292,7 +299,7 @@ Bot.prototype.sendMessage = function (options, callback) {
   var self = this
     , deferred = Q.defer();
 
-  this._get({ 
+  this._get({
     method: 'sendMessage',
     params: {
       chat_id: options.chat_id,
@@ -318,7 +325,7 @@ Bot.prototype.sendMessage = function (options, callback) {
 
 /**
  * Use this method to forward messages of any kind.
- * 
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {Integer}             options.from_chat_id    Unique identifier for the chat where the original message was sent — User or GroupChat id
@@ -355,8 +362,8 @@ Bot.prototype.forwardMessage = function (options, callback) {
 };
 
 /**
- * Use this method to send photos. 
- * 
+ * Use this method to send photos.
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {String}              options.photo     Path to photo file (Library will create a stream if the path exist)
@@ -374,7 +381,7 @@ Bot.prototype.sendPhoto = function (options, callback) {
     , deferred = Q.defer();
 
   if (options.file_id) {
-    this._get({ 
+    this._get({
       method: 'sendPhoto',
       params: {
         chat_id: options.chat_id,
@@ -424,7 +431,7 @@ Bot.prototype.sendPhoto = function (options, callback) {
 
 /**
  * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
- * 
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {String}              options.audio     Path to audio file (Library will create a stream if the path exist)
@@ -440,13 +447,8 @@ Bot.prototype.sendAudio = function (options, callback) {
   var self = this
     , deferred = Q.defer();
 
-  if (mime.lookup(options.files.audio) !== 'audio/ogg') {
-    return Q.reject(new Error('Invalid file type'))
-    .nodeify(callback);
-  }
-
   if (options.file_id) {
-    this._get({ 
+    this._get({
       method: 'sendAudio',
       params: {
         chat_id: options.chat_id,
@@ -466,6 +468,11 @@ Bot.prototype.sendAudio = function (options, callback) {
       }
     });
   } else {
+    if (mime.lookup(options.files.audio) !== 'audio/ogg') {
+      return Q.reject(new Error('Invalid file type'))
+      .nodeify(callback);
+    }
+
     this._multipart({
       method: 'sendAudio',
       params: {
@@ -488,13 +495,13 @@ Bot.prototype.sendAudio = function (options, callback) {
       }
     });
   }
-  
+
   return deferred.promise.nodeify(callback);
 };
 
 /**
- * Use this method to send general files. 
- * 
+ * Use this method to send general files.
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {String}              options.document  Path to document file (Library will create a stream if the path exist)
@@ -511,7 +518,7 @@ Bot.prototype.sendDocument = function (options, callback) {
     , deferred = Q.defer();
 
   if (options.file_id) {
-    this._get({ 
+    this._get({
       method: 'sendDocument',
       params: {
         chat_id: options.chat_id,
@@ -559,7 +566,7 @@ Bot.prototype.sendDocument = function (options, callback) {
 
 /**
  * Use this method to send .webp stickers.
- * 
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {String}              options.sticker   Path to sticker file (Library will create a stream if the path exist)
@@ -575,13 +582,8 @@ Bot.prototype.sendSticker = function (options, callback) {
   var self = this
     , deferred = Q.defer();
 
-  if (mime.lookup(options.files.sticker) !== 'image/webp') {
-    return Q.reject(new Error('Invalid file type'))
-    .nodeify(callback);
-  }
-
   if (options.file_id) {
-    this._get({ 
+    this._get({
       method: 'sendSticker',
       params: {
         chat_id: options.chat_id,
@@ -601,6 +603,11 @@ Bot.prototype.sendSticker = function (options, callback) {
       }
     });
   } else {
+    if (mime.lookup(options.files.sticker) !== 'image/webp') {
+      return Q.reject(new Error('Invalid file type'))
+      .nodeify(callback);
+    }
+
     this._multipart({
       method: 'sendSticker',
       params: {
@@ -623,13 +630,13 @@ Bot.prototype.sendSticker = function (options, callback) {
       }
     });
   }
-  
+
   return deferred.promise.nodeify(callback);
 };
 
 /**
  * Use this method to send video files, Telegram clients support mp4 video.
- * 
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {String}              options.video   Path to video file (Library will create a stream if the path exist)
@@ -645,13 +652,8 @@ Bot.prototype.sendVideo = function (options, callback) {
   var self = this
     , deferred = Q.defer();
 
-  if (mime.lookup(options.files.video.filename) !== 'video/mp4') {
-    return Q.reject(new Error('Invalid file type'))
-    .nodeify(callback);
-  }
-
   if (options.file_id) {
-    this._get({ 
+    this._get({
       method: 'sendSticker',
       params: {
         chat_id: options.chat_id,
@@ -671,6 +673,11 @@ Bot.prototype.sendVideo = function (options, callback) {
       }
     });
   } else {
+    if (mime.lookup(options.files.video.filename) !== 'video/mp4') {
+      return Q.reject(new Error('Invalid file type'))
+      .nodeify(callback);
+    }
+
     this._multipart({
       method: 'sendVideo',
       params: {
@@ -699,7 +706,7 @@ Bot.prototype.sendVideo = function (options, callback) {
 
 /**
  * Use this method to send point on the map.
- * 
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {Float}               options.latitude  Latitude of location
@@ -741,7 +748,7 @@ Bot.prototype.sendLocation = function (options, callback) {
 
 /**
  * Use this method when you need to tell the user that something is happening on the bot's side.
- * 
+ *
  * @param {Object}              options           Options
  * @param {Integer}             options.chat_id   Unique identifier for the message recipient — User or GroupChat id
  * @param {String}              options.action    Type of action to broadcast.
@@ -754,7 +761,7 @@ Bot.prototype.sendChatAction = function (options, callback) {
   var self = this
     , deferred = Q.defer();
 
-  this._get({ 
+  this._get({
     method: 'sendChatAction',
     params: {
       chat_id: options.chat_id,
@@ -800,7 +807,7 @@ module.exports = Bot;
 
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
-	on Wed Jul 8th 2015 using the <a
+	on Mon Jul 20th 2015 using the <a
 	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 </span>
 </footer>
