@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.0.18 Merged bug fix
 - 0.0.17 support multiple command arguments
 - 0.0.16 support file id for audio, document, sticker and video
 - 0.0.15 emit command (message that starts with '/')
