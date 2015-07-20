@@ -81,3 +81,6 @@ var bot = new Bot({
 .start();
 
 ```
+
+## Credits
+[Sample sound](http://www.bigsoundbank.com/sound-0477-wilhelm-scream.html)

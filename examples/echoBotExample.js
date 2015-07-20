@@ -2,6 +2,8 @@
  * Created by longstone on 28/06/15.
  */
 'use strict';
+
+var fs = require('fs');
 var Bot = require('../lib/Bot');
 
 /**
@@ -12,6 +14,12 @@ var bot = new Bot({
 })
 .on('message', function (message) {
   switch (message.text) {
+    case "/sendMessage":
+      bot.sendMessage({
+        chat_id: message.chat.id,
+        text: 'echo : ' + message.text
+      });
+      break;
     case "/sendPhoto":
       bot.sendPhoto({
         chat_id: message.chat.id,
@@ -21,11 +29,15 @@ var bot = new Bot({
         }
       });
       break;
-    case "/sendMessage":
-      bot.sendMessage({
+    case "/sendDocument":
+      bot.sendDocument({
         chat_id: message.chat.id,
-        text: 'echo : ' + message.text
-      });
+        files: {
+          filename: 'scream',
+          contentType: 'audio/ogg',
+          stream: fs.createReadStream('./0477.ogg')
+        }
+      }, console.error);
       break;
     case "/sendLocation":
       bot.sendLocation({
