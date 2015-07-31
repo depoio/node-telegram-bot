@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.1 Setwebhook, disable command parsing & maxattempts
 - 0.0.19 Added webhook support instead of polling
 - 0.0.18 Merged bug fix
 - 0.0.17 support multiple command arguments
