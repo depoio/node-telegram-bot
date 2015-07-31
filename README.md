@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.0.19 Added webhook support instead of polling
 - 0.0.18 Merged bug fix
 - 0.0.17 support multiple command arguments
 - 0.0.16 support file id for audio, document, sticker and video
@@ -81,6 +82,5 @@ var bot = new Bot({
 .start();
 
 ```
-
 ## Credits
 [Sample sound](http://www.bigsoundbank.com/sound-0477-wilhelm-scream.html)
