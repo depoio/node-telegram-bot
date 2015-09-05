@@ -38,11 +38,10 @@
     "chai": "^3.0.0",
     "gh-pages": "^0.3.1",
     "gulp": "^3.9.0",
-    "gulp-jsdoc": "^0.1.4",
     "gulp-mocha": "^2.1.2",
     "gulp-shell": "^0.4.2",
     "ink-docstrap": "^0.5.2",
-    "jsdoc": "^3.3.2",
+    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git",
     "nock": "^2.6.0"
   }
 }
