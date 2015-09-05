@@ -53,6 +53,7 @@
 	<article>
 		<pre
 			class="sunlight-highlight-javascript linenums">var EventEmitter = require('events').EventEmitter
+  , debug = require('debug')('node-telegram-bot')
   , util = require('util')
   , request = require('request')
   , fs = require('fs')
@@ -80,7 +81,13 @@ function Bot(options) {
   this.first_name = '';
   this.username = '';
   this.token = options.token;
-  this.offset = 0;
+  this.offset = options.offset ? options.offset : 0;
+  this.interval = options.interval ? options.interval : 500;
+	this.webhook = options.webhook ? options.webhook : false;
+  this.parseCommand = options.parseCommand ? options.parseCommand : true;
+  this.maxAttempts = options.maxAttempts ? options.maxAttempts : 5;
+  this.polling = false;
+  this.base_url = 'https://api.telegram.org/bot';
 }
 
 util.inherits(Bot, EventEmitter);
@@ -93,58 +100,137 @@ util.inherits(Bot, EventEmitter);
  * @param {Object}  Response from Telegram service
  */
 Bot.prototype._get = function (options, callback) {
+  var self = this;
   var url = this.base_url + this.token + '/' + options.method;
 
   if (options.params) {
     url += '?' + qs.stringify(options.params);
   }
 
-  request.get({
-    url: url,
-    json: true
-  }, function (err, res, body) {
-    if (err) {
-      callback(err);
-    } else {
-      callback(null, body);
-    }
-  });
+  var attempt = 1;
+
+  function retry() {
+    request.get({
+      url: url,
+      json: true
+    }, function (err, res, body) {
+      if (err) {
+        if (err.code === 'ENOTFOUND' &amp;&amp; attempt &lt; self.maxAttempts) {
+        ++attempt;
+        self.emit('retry', attempt);
+        retry();
+        } else {
+          callback(err);
+        }
+      } else {
+        callback(null, body);
+      }
+    });
+  }
+
+  retry();
 
   return this;
 };
 
 Bot.prototype._multipart = function (options, callback) {
+  var self = this;
   var url = this.base_url + this.token + '/' + options.method;
 
-  var req = request.post(url, function (err, res, body) {
-    if (err) {
-      callback(err);
-    } else {
-      callback(null, body);
-    }
-  });
+  var attempt = 1;
 
-  var form = req.form();
-  Object.keys(options.files).forEach(function(key) {
-    var file = options.files[key]
-      , filename = path.basename(file)
-      , stream = fs.createReadStream(file);
+  function retry() {
+    var req = request.post(url, function (err, res, body) {
+      if (err) {
+        if (err.code === 'ENOTFOUND' &amp;&amp; attempt &lt; self.maxAttempts) {
+          ++attempt;
+          self.emit('retry', attempt);
+          retry();
+        } else {
+          callback(err);
+        }
+      } else {
+        var contentType = res.headers['content-type'];
 
-    form.append(key, stream, {
-      filename: filename,
-      contentType: mime.lookup(file)
+        if (contentType.indexOf('application/json') >= 0) {
+          try {
+            body = JSON.parse(body);
+          } catch (e) {
+            callback(e, body);
+          }
+        }
+
+        callback(null, body);
+      }
     });
-  });
 
-  Object.keys(options.params).forEach(function(key) {
-    if (options.params[key]) {
-      form.append(key, options.params[key]);
+    var form = req.form()
+      , filename
+      , type
+      , stream
+      , contentType;
+
+    var arr = Object.keys(options.files);
+
+    if (arr.indexOf('stream') > -1) {
+      type = options.files['type'];
+      filename = options.files['filename'];
+      stream = options.files['stream'];
+      contentType = options.files['contentType'];
+    } else {
+      arr.forEach(function (key) {
+        var file = options.files[key];
+        type = key;
+        filename = path.basename(file);
+        stream = fs.createReadStream(file);
+        contentType = mime.lookup(file);
+      })
     }
-  });
+
+    form.append(type, stream, {
+      filename: filename,
+      contentType: contentType
+    });
+
+    Object.keys(options.params).forEach(function (key) {
+      if (options.params[key]) {
+        form.append(key, options.params[key]);
+      }
+    });
+  }
+
+  retry();
 
   return this;
 };
 
+Bot.prototype._setWebhook = function (webhook) {
+  var self = this;
+  var url = this.base_url + this.token + '/setWebhook' + "?" + qs.stringify({url: webhook});
+
+  request.get({
+    url: url,
+    json: true
+  }, function (err, res, body) {
+    if (!err &amp;&amp; res.statusCode === 200) {
+      if (body.ok) {
+      	debug("Set webhook to " + self.webhook);
+			} else {
+				debug("Body not ok");
+				debug(body);
+			}
+    } else {
+			debug(err);
+			debug("Failed to set webhook with code" + res.statusCode);
+		}
+  });
+}
+
+/**
+ * Start polling for messages
+ *
+ * @return {Bot} Self
+ */
 Bot.prototype._poll = function () {
   var self = this;
   var url = this.base_url + this.token + '/getUpdates?timeout=60&amp;offset=' + this.offset;
@@ -153,28 +239,34 @@ Bot.prototype._poll = function () {
     url: url,
     json: true
   }, function (err, res, body) {
-    if (!err &amp;&amp; res.statusCode === 200) {
+    if (err) {
+      self.emit('error', err);
+    } else if (res.statusCode === 200) {
       if (body.ok) {
         body.result.forEach(function (msg) {
           if (msg.update_id >= self.offset) {
             self.offset = msg.update_id + 1;
-	        if(msg.message.text &amp;&amp; msg.message.text.charAt(0) === '/'){
-		        var command = msg.message.text.split(' ', 2)[0];
-		        command = command.replace(/[^a-zA-Z0-9 ]/g, "");
-		        if(msg.message.text.split(' ')[1])
-		        {
-			        var arguments = msg.message.text.split(' ');
-			        arguments.shift();
-			        self.emit(command, msg.message, arguments);
-		        }
-		        else{
-			        self.emit(command, msg.message);
-		        }
-	        }
+
+            if (self.parseCommand) {
+              if (msg.message.text &amp;&amp; msg.message.text.charAt(0) === '/') {
+                var command = msg.message.text.split(' ', 2)[0];
+                command = command.replace(/[^a-zA-Z0-9 ]/g, "");
+                if (msg.message.text.split(' ')[1]) {
+                  var arguments = msg.message.text.split(' ');
+                  arguments.shift();
+                  self.emit(command, msg.message, arguments);
+                } else{
+                  self.emit(command, msg.message);
+                }
+              }
+            }
+
             self.emit('message', msg.message);
           }
         });
       }
+    } else if (res.statusCode === 401) {
+      self.emit('error', 'Invalid token');
     }
 
     if (self.polling) {
@@ -185,16 +277,15 @@ Bot.prototype._poll = function () {
   return this;
 };
 
-/**
- * Start polling for messages
- *
- * @return {Bot} Self
- */
 Bot.prototype.start = function () {
   var self = this;
 
-  self._poll();
-  self.polling = true;
+	if (self.webhook) {
+		self._setWebhook(this.webhook);
+	} else {
+	  self._poll();
+  	self.polling = true;
+	}
 
   return self;
 };
@@ -206,7 +297,7 @@ Bot.prototype.start = function () {
  */
 Bot.prototype.stop = function () {
   var self = this;
-
+	self._setWebhook("");
   self.polling = false;
 
   return self;
@@ -402,6 +493,20 @@ Bot.prototype.sendPhoto = function (options, callback) {
       }
     });
   } else {
+    var files;
+    if (options.files.stream) {
+      files = {
+        type: 'photo',
+        filename: options.files.filename,
+        contentType: options.files.contentType,
+        stream: options.files.stream
+      }
+    } else {
+      files = {
+       photo: options.files.photo
+      }
+    }
+
     this._multipart({
       method: 'sendPhoto',
       params: {
@@ -410,9 +515,7 @@ Bot.prototype.sendPhoto = function (options, callback) {
         reply_to_message_id: options.reply_to_message_id,
         reply_markup: JSON.stringify(options.reply_markup)
       },
-      files: {
-        photo: options.files.photo
-      }
+      files: files
     }, function (err, res) {
       if (err) {
         return deferred.reject(err);
@@ -468,9 +571,21 @@ Bot.prototype.sendAudio = function (options, callback) {
       }
     });
   } else {
-    if (mime.lookup(options.files.audio) !== 'audio/ogg') {
+    var files;
+    if (options.files.stream) {
+      files = {
+        type: 'audio',
+        filename: options.files.filename,
+        contentType: options.files.contentType,
+        stream: options.files.stream
+      }
+    } else if (mime.lookup(options.files.audio) !== 'audio/ogg') {
       return Q.reject(new Error('Invalid file type'))
       .nodeify(callback);
+    } else {
+      files = {
+        audio: options.files.audio
+      }
     }
 
     this._multipart({
@@ -480,9 +595,7 @@ Bot.prototype.sendAudio = function (options, callback) {
         reply_to_message_id: options.reply_to_message_id,
         reply_markup: JSON.stringify(options.reply_markup)
       },
-      files: {
-        audio: options.files.audio
-      }
+      files: files
     }, function (err, res) {
       if (err) {
         return deferred.reject(err);
@@ -538,6 +651,20 @@ Bot.prototype.sendDocument = function (options, callback) {
       }
     });
   } else {
+    var files;
+    if (options.files.stream) {
+      files = {
+        type: 'document',
+        filename: options.files.filename,
+        contentType: options.files.contentType,
+        stream: options.files.stream
+      }
+    } else {
+      files = {
+        document: options.files.document
+      }
+    }
+
     this._multipart({
       method: 'sendDocument',
       params: {
@@ -545,9 +672,7 @@ Bot.prototype.sendDocument = function (options, callback) {
         reply_to_message_id: options.reply_to_message_id,
         reply_markup: JSON.stringify(options.reply_markup)
       },
-      files: {
-        document: options.files.document
-      }
+      files: files
     }, function (err, res) {
       if (err) {
         return deferred.reject(err);
@@ -673,9 +798,21 @@ Bot.prototype.sendVideo = function (options, callback) {
       }
     });
   } else {
-    if (mime.lookup(options.files.video.filename) !== 'video/mp4') {
+    var files;
+    if (options.files.stream) {
+      files = {
+        type: 'video',
+        filename: options.files.filename,
+        contentType: options.files.contentType,
+        stream: options.files.stream
+      }
+    } else if (mime.lookup(options.files.video.filename) !== 'video/mp4') {
       return Q.reject(new Error('Invalid file type'))
       .nodeify(callback);
+    } else {
+      files = {
+        video: options.files.video
+      }
     }
 
     this._multipart({
@@ -685,9 +822,7 @@ Bot.prototype.sendVideo = function (options, callback) {
         reply_to_message_id: options.reply_to_message_id,
         reply_markup: JSON.stringify(options.reply_markup)
       },
-      files: {
-        video: options.files.video
-      }
+      files: files
     }, function (err, res) {
       if (err) {
         return deferred.reject(err);
@@ -807,7 +942,7 @@ module.exports = Bot;
 
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
-	on Mon Jul 20th 2015 using the <a
+	on Sat Sep 5th 2015 using the <a
 	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 </span>
 </footer>
