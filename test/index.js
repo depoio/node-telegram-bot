@@ -14,7 +14,7 @@ describe('Telegram Bot client general test', function () {
   });
 
   it('should instantiate Telegram Bot client with correct token and values', function (done) {
-    bot.base_url.should.equal('https://api.telegram.org/bot');
+    bot.base_url.should.equal('https://api.telegram.org/');
     bot.polling.should.equal(false);
     bot.token.should.equal(TOKEN);
     done();
