@@ -1,4 +1,4 @@
-var Bot = require('./lib/Bot');
+var Bot = require('../lib/Bot');
 
 var bot = new Bot({
   token: 'TOKEN HERE'
