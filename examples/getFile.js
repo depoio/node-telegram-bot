@@ -17,4 +17,7 @@ var bot = new Bot({
     });
   }
 })
+.on('error', function (err) {
+  console.error(err);
+})
 .start();
