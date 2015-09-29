@@ -1,5 +1,5 @@
 
-var Bot = require('./lib/Bot')
+var Bot = require('../lib/Bot')
   , fs = require('fs');
 
 bot.sendPhoto({
