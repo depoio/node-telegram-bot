@@ -9,7 +9,8 @@ var bot = new Bot({
   console.log(message);
   if (message.sticker) {
     bot.getFile({
-      file_id: message.sticker.file_id
+      file_id: message.sticker.file_id,
+      dir: '.'
     })
     .then(function (res) {
       console.log(res);
