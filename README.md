@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.1.5 Add analytics botan.io
 - 0.1.4 Fixes #48
 - 0.1.2 Merge #40, Use debug for logging
 - 0.1 Setwebhook, disable command parsing & maxattempts
@@ -69,7 +70,6 @@ bot.sendPhoto({
 ```
 
 
-
 ## Here's an example:
 
 ```javascript
@@ -85,5 +85,20 @@ var bot = new Bot({
 .start();
 
 ```
+
+## How to use Botan.io analytics:
+```javascript
+
+var bot = new Bot({
+  token: 'Telegram token'
+})
+.enableAnalytics('Botan.io token')
+.on('message', function (message) {
+  console.log(message);
+})
+.start();
+
+```
+
 ## Credits
 [Sample sound](http://www.bigsoundbank.com/sound-0477-wilhelm-scream.html)
