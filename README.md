@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.1.6 Fixes #53
 - 0.1.5 Add analytics botan.io
 - 0.1.4 Fixes #48
 - 0.1.2 Merge #40, Use debug for logging
