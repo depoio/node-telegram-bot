@@ -4,6 +4,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.1.8 Timeout defaults to 60000ms
 - 0.1.7 Supports splitting command target (#45)
 - 0.1.6 Fixes #53
 - 0.1.5 Add analytics botan.io
