@@ -1,5 +1,7 @@
 node-telegram-bot
 =================
+
+[![Join the chat at https://gitter.im/depoio/node-telegram-bot](https://badges.gitter.im/depoio/node-telegram-bot.svg)](https://gitter.im/depoio/node-telegram-bot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![build status](https://img.shields.io/travis/depoio/node-telegram-bot.svg?style=flat-square)](https://travis-ci.org/depoio/node-telegram-bot)[![dependencies](https://img.shields.io/david/depoio/node-telegram-bot.svg?style=flat-square)](https://david-dm.org/depoio/node-telegram-bot)[![node version](https://img.shields.io/node/v/gh-badges.svg?style=flat-square)](https://www.npmjs.com/package/node-telegram-bot)[![npm version](http://img.shields.io/npm/v/gh-badges.svg?style=flat-square)](https://www.npmjs.com/package/node-telegram-bot)
 
 ## Changelog
