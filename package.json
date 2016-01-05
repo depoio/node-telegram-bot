@@ -1,0 +1,31 @@
+{
+  "name": "node-telegram-bot",
+  "version": "0.9.0",
+  "description": "Telegram Bot API Wrapper for nodejs",
+  "main": "index.js",
+  "keywords": [
+    "telegram",
+    "telegram bot",
+    "telegram bot api",
+    "bot"
+  ],
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/depoio/node-telegram-bot.git"
+  },
+  "author": [
+    "Shern Shiou Tan <shernshiou@gmail.com> (http://blog.shernshiou.com/)"
+  ],
+  "contributors": [
+    "Alberto Bottarini <alberto.bottarini@gmail.com> (http://www.albertobottarini.com)",
+    "Sebastian Arena <sarena@mobile-tonic.com> (http://mobile-tonic.com)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/depoio/node-telegram-bot/issues"
+  },
+  "homepage": "https://github.com/depoio/node-telegram-bot#readme"
+}
