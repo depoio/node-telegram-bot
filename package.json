@@ -9,6 +9,9 @@
     "telegram bot api",
     "bot"
   ],
+  "engines" : {
+    "node" : ">=4.2.4"
+  },
   "scripts": {
     "test": "gulp test"
   },
