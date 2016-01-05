@@ -1,9 +1,6 @@
 language: node_js
 node_js:
   - "4.2.4"
-branches:
-  except:
-    - feature-v1.0.0
 webhooks:
   urls:
     - https://webhooks.gitter.im/e/83db5610763a23d95647

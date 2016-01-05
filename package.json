@@ -9,8 +9,8 @@
     "telegram bot api",
     "bot"
   ],
-  "engines" : {
-    "node" : ">=4.2.4"
+  "engines": {
+    "node": ">=4.2.4"
   },
   "scripts": {
     "test": "gulp test"
@@ -33,5 +33,9 @@
   "homepage": "https://github.com/depoio/node-telegram-bot#readme",
   "dependencies": {
     "request": "^2.67.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-mocha": "^2.2.0"
   }
 }
