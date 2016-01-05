@@ -1,9 +1,10 @@
 language: node_js
 node_js:
   - "4.2.4"
-webhooks:
-  urls:
-    - https://webhooks.gitter.im/e/83db5610763a23d95647
-  on_success: always  # options: [always|never|change] default: always
-  on_failure: always  # options: [always|never|change] default: always
-  on_start: false     # default: false
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/83db5610763a23d95647
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: false     # default: false
