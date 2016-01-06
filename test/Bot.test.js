@@ -18,4 +18,24 @@ describe('Telegram Bot client general test', function () {
     bot.token.should.equal(TOKEN);
     done();
   });
+
+  describe('GET request', function () {
+    it('should have _get function', function (done) {
+      bot._get.should.exist;
+      done();
+    });
+
+    it('getMe should throw 401 when using bad token', function (done) {
+      bot._get({ method: 'getMe' })
+      .then(function (res) {
+        res.ok.should.not.be.ok;
+        res.error_code.should.equal(401);
+        res.description.should.equal('[Error]: Unauthorized');
+        done();
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+    });
+  });
 });
