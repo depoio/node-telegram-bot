@@ -29,6 +29,7 @@ describe('Telegram Bot client general test', function () {
       this.slow(1500);
       bot._get({ method: 'getMe' })
       .then(function (res) {
+        console.log(res);
         res.body.should.be.an('object');
         res.body.ok.should.not.be.ok;
         res.body.error_code.should.equal(401);
