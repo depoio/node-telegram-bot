@@ -26,15 +26,18 @@ describe('Telegram Bot client general test', function () {
     });
 
     it('getMe should throw 401 when using bad token', function (done) {
+      this.slow(1500);
       bot._get({ method: 'getMe' })
       .then(function (res) {
-        res.ok.should.not.be.ok;
-        res.error_code.should.equal(401);
-        res.description.should.equal('[Error]: Unauthorized');
+        res.body.should.be.an('object');
+        res.body.ok.should.not.be.ok;
+        res.body.error_code.should.equal(401);
+        res.body.description.should.equal('[Error]: Unauthorized');
         done();
       })
       .catch(function (err) {
-        console.log(err);
+        should.not.exist(err);
+        console.error(err);
       });
     });
   });
