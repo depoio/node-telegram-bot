@@ -35,6 +35,7 @@
     "request": "^2.67.0"
   },
   "devDependencies": {
+    "chai": "^3.4.1",
     "gulp": "^3.9.0",
     "gulp-mocha": "^2.2.0"
   }
