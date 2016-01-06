@@ -2,7 +2,7 @@ var chai = require('chai')
   , should = chai.should()
   , Bot = require('../index');
 
-var TOKEN = '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11';
+const TOKEN = '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11';
 
 describe('Telegram Bot client general test', function () {
   var bot;
@@ -29,7 +29,8 @@ describe('Telegram Bot client general test', function () {
       this.slow(1500);
       bot._get({ method: 'getMe' })
       .then(function (res) {
-        console.log(res);
+        console.log(res.req);
+        res.request.href.should.equal(`${bot.base_url}bot${TOKEN}/getMe`);
         res.body.should.be.an('object');
         res.body.ok.should.not.be.ok;
         res.body.error_code.should.equal(401);
