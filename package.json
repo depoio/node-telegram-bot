@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": {
     "node-telegram": "bin/cli.js"
-  }
+  },
   "keywords": [
     "telegram",
     "telegram bot",
