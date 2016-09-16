@@ -6,6 +6,7 @@ node-telegram-bot
 
 ## Changelog
 
+- 0.1.10 add and improve methods from updated telegram bot api
 - 0.1.9 Improved error 409 by kaminoo
 - 0.1.8 Timeout defaults to 60000ms
 - 0.1.7 Supports splitting command target (#45)
